@@ -1,0 +1,130 @@
+#-----------------------------------------------------------------------------
+# Umicom Accountant Module
+# File: CMakeLists.txt
+#
+# PURPOSE:
+#   Build the thin Umicom Accountant composition against the canonical Umicom
+#   Framework application target without defining local reusable services.
+#
+# Created by: Sammy Hegab
+# Organisation: Umicom Foundation
+# Licence: MIT
+#-----------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.24)
+
+project(
+    UmicomAccountantModule
+    VERSION 0.1.0
+    DESCRIPTION "Thin Umicom Accountant composition over Umicom Framework"
+    LANGUAGES C
+)
+
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+option(UMICOM_ACCOUNTANT_BUILD_CONSOLE
+       "Build the native Umicom Accountant verification console"
+       ON)
+
+include(CTest)
+include(GNUInstallDirs)
+
+if(NOT TARGET Umicom::Framework)
+    find_package(UmicomFramework CONFIG REQUIRED)
+endif()
+if(NOT TARGET Umicom::application)
+    message(FATAL_ERROR
+        "Umicom Accountant requires Framework target Umicom::application")
+endif()
+
+if(NOT COMMAND umicom_apply_warnings)
+    function(umicom_apply_warnings target)
+        if(MSVC)
+            target_compile_options(${target} PRIVATE /W4)
+        else()
+            target_compile_options(${target} PRIVATE
+                -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+        endif()
+    endfunction()
+endif()
+if(NOT COMMAND umicom_apply_sanitizers)
+    function(umicom_apply_sanitizers target)
+    endfunction()
+endif()
+
+add_library(umicom_accountant_module STATIC
+    src/application.c
+    src/workspace.c
+)
+add_library(Umicom::accountant_module ALIAS umicom_accountant_module)
+
+target_include_directories(umicom_accountant_module PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+target_link_libraries(umicom_accountant_module PUBLIC
+    Umicom::Framework
+    Umicom::application
+)
+
+if(COMMAND umicom_apply_warnings)
+    umicom_apply_warnings(umicom_accountant_module)
+endif()
+if(COMMAND umicom_apply_sanitizers)
+    umicom_apply_sanitizers(umicom_accountant_module)
+endif()
+
+if(UMICOM_ACCOUNTANT_BUILD_CONSOLE)
+    add_executable(umicom-accountant-console
+        src/console/main.c)
+    target_link_libraries(umicom-accountant-console PRIVATE
+        Umicom::accountant_module)
+    if(COMMAND umicom_apply_warnings)
+        umicom_apply_warnings(umicom-accountant-console)
+    endif()
+    if(COMMAND umicom_apply_sanitizers)
+        umicom_apply_sanitizers(umicom-accountant-console)
+    endif()
+endif()
+
+if(BUILD_TESTING)
+    add_executable(umicom_accountant_module-test
+        tests/test_application.c)
+    target_link_libraries(umicom_accountant_module-test PRIVATE
+        Umicom::accountant_module)
+    if(COMMAND umicom_apply_warnings)
+        umicom_apply_warnings(umicom_accountant_module-test)
+    endif()
+    if(COMMAND umicom_apply_sanitizers)
+        umicom_apply_sanitizers(umicom_accountant_module-test)
+    endif()
+    add_test(
+        NAME accountant.module.application
+        COMMAND umicom_accountant_module-test)
+endif()
+
+install(TARGETS umicom_accountant_module
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+if(TARGET umicom-accountant-console)
+    install(TARGETS umicom-accountant-console
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES application.umicom.yaml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/applications/accountant)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+    install(FILES README.md
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/applications/accountant)
+endif()
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+    install(FILES LICENSE
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/accountant)
+endif()
+
+message(STATUS "Umicom Accountant Module version: ${PROJECT_VERSION}")
+message(STATUS "Umicom Accountant uses Framework-owned application experience")
