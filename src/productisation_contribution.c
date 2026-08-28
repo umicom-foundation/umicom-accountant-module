@@ -18,7 +18,7 @@ static const UmiProductApplicationAdoption ADOPTION = {
     "org.umicom.accountant",
     "Umicom Accountant",
     "umicom-accountant-console",
-    UMI_PRODUCT_FRONTEND_CONSOLE,
+    UMI_PRODUCT_FRONTEND_FLAG_CONSOLE,
     1,
     1,
     1,

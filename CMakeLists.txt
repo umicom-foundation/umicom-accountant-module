@@ -75,6 +75,12 @@ if(COMMAND umicom_apply_sanitizers)
     umicom_apply_sanitizers(umicom_accountant_module)
 endif()
 
+include(
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../framework/cmake/UmicomThinApplicationRuntime.cmake")
+umicom_extend_thin_application_runtime(
+    NAME "accountant"
+    TARGET "umicom_accountant_module")
+
 if(UMICOM_ACCOUNTANT_BUILD_CONSOLE)
     add_executable(umicom-accountant-console
         src/console/main.c)
@@ -102,6 +108,20 @@ if(BUILD_TESTING)
     add_test(
         NAME accountant.module.application
         COMMAND umicom_accountant_module-test)
+
+    add_executable(umicom_accountant_workspace-test
+        tests/test_workspace.c)
+    target_link_libraries(umicom_accountant_workspace-test PRIVATE
+        Umicom::accountant_module)
+    if(COMMAND umicom_apply_warnings)
+        umicom_apply_warnings(umicom_accountant_workspace-test)
+    endif()
+    if(COMMAND umicom_apply_sanitizers)
+        umicom_apply_sanitizers(umicom_accountant_workspace-test)
+    endif()
+    add_test(
+        NAME accountant.module.workspace
+        COMMAND umicom_accountant_workspace-test)
 endif()
 
 install(TARGETS umicom_accountant_module
