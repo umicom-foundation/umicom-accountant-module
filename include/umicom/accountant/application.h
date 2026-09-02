@@ -25,11 +25,23 @@ extern "C" {
 
 #define UMI_ACCOUNTANT_MODULE_API_VERSION 1U
 
+/**
+ * Provide the accountant application id operation used by this module and its client
+ * applications.
+ */
 const char *umi_accountant_application_id(void);
 
+/**
+ * Provide the accountant application experience operation used by this module and its
+ * client applications.
+ */
 const UmiApplicationExperienceDefinition *
 umi_accountant_application_experience(void);
 
+/**
+ * Provide the accountant application status operation used by this module and its client
+ * applications.
+ */
 UmiStatus umi_accountant_application_status(
     UmiApplicationExperienceStatus *out_status);
 

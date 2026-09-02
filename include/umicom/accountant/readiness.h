@@ -23,8 +23,16 @@
 extern "C" {
 #endif
 
+/**
+ * Provide the accountant readiness report operation used by this module and its client
+ * applications.
+ */
 UmiStatus umi_accountant_readiness_report(
     UmiApplicationReadinessReport *out_report);
+/**
+ * Provide the accountant readiness next feature operation used by this module and its
+ * client applications.
+ */
 const UmiExperienceFeatureDefinition *umi_accountant_readiness_next_feature(void);
 
 #ifdef __cplusplus

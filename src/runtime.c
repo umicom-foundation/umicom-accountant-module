@@ -18,20 +18,36 @@
 
 #include "umicom/accountant/application.h"
 
+/*
+ * Provide the accountant runtime experience operation used by this module and its client
+ * applications.
+ */
 const UmiApplicationExperienceDefinition *umi_accountant_runtime_experience(void)
 {
     return umi_accountant_application_experience();
 }
 
+/*
+ * Initialise accountant runtime from caller-provided values so later operations receive a
+ * known state.
+ */
 UmiStatus umi_accountant_runtime_init(
     UmiApplicationWorkspaceRuntime *out_runtime)
 {
     const UmiApplicationExperienceDefinition *experience =
         umi_accountant_runtime_experience();
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (experience == NULL) return UMI_STATUS_NOT_FOUND;
     return umi_application_workspace_runtime_init(experience, out_runtime);
 }
 
+/*
+ * Provide the accountant runtime health operation used by this module and its client
+ * applications.
+ */
 UmiStatus umi_accountant_runtime_health(
     UmiApplicationCapabilityProbe probe,
     void *user_data,
@@ -39,6 +55,10 @@ UmiStatus umi_accountant_runtime_health(
 {
     const UmiApplicationExperienceDefinition *experience =
         umi_accountant_runtime_experience();
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (experience == NULL) return UMI_STATUS_NOT_FOUND;
     return umi_application_runtime_health_evaluate(
         experience, probe, user_data, out_health);

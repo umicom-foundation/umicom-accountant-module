@@ -33,25 +33,33 @@ option(UMICOM_ACCOUNTANT_BUILD_CONSOLE
 include(CTest)
 include(GNUInstallDirs)
 
+# Apply this branch only when its contract condition is satisfied.
 if(NOT TARGET Umicom::Framework)
     find_package(UmicomFramework CONFIG REQUIRED)
 endif()
+# Apply this branch only when its contract condition is satisfied.
 if(NOT TARGET Umicom::application)
     message(FATAL_ERROR
         "Umicom Accountant requires Framework target Umicom::application")
 endif()
 
+# Apply this branch only when its contract condition is satisfied.
 if(NOT COMMAND umicom_apply_warnings)
+    # Provide the apply warnings operation used by this module and its client applications.
     function(umicom_apply_warnings target)
+        # Apply this branch only when its contract condition is satisfied.
         if(MSVC)
             target_compile_options(${target} PRIVATE /W4)
+        # Use this fallback path when the earlier condition does not apply.
         else()
             target_compile_options(${target} PRIVATE
                 -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
         endif()
     endfunction()
 endif()
+# Apply this branch only when its contract condition is satisfied.
 if(NOT COMMAND umicom_apply_sanitizers)
+    # Provide the apply sanitizers operation used by this module and its client applications.
     function(umicom_apply_sanitizers target)
     endfunction()
 endif()
@@ -71,9 +79,11 @@ target_link_libraries(umicom_accountant_module PUBLIC
     Umicom::application
 )
 
+# Apply this branch only when its contract condition is satisfied.
 if(COMMAND umicom_apply_warnings)
     umicom_apply_warnings(umicom_accountant_module)
 endif()
+# Apply this branch only when its contract condition is satisfied.
 if(COMMAND umicom_apply_sanitizers)
     umicom_apply_sanitizers(umicom_accountant_module)
 endif()
@@ -84,27 +94,33 @@ umicom_extend_thin_application_runtime(
     NAME "accountant"
     TARGET "umicom_accountant_module")
 
+# Keep the operation inside its valid bounds before reading, writing or adding data.
 if(UMICOM_ACCOUNTANT_BUILD_CONSOLE)
     add_executable(umicom-accountant-console
         src/console/main.c)
     target_link_libraries(umicom-accountant-console PRIVATE
         Umicom::accountant_module)
+    # Apply this branch only when its contract condition is satisfied.
     if(COMMAND umicom_apply_warnings)
         umicom_apply_warnings(umicom-accountant-console)
     endif()
+    # Apply this branch only when its contract condition is satisfied.
     if(COMMAND umicom_apply_sanitizers)
         umicom_apply_sanitizers(umicom-accountant-console)
     endif()
 endif()
 
+# Apply this branch only when its contract condition is satisfied.
 if(BUILD_TESTING)
     add_executable(umicom_accountant_module-test
         tests/test_application.c)
     target_link_libraries(umicom_accountant_module-test PRIVATE
         Umicom::accountant_module)
+    # Apply this branch only when its contract condition is satisfied.
     if(COMMAND umicom_apply_warnings)
         umicom_apply_warnings(umicom_accountant_module-test)
     endif()
+    # Apply this branch only when its contract condition is satisfied.
     if(COMMAND umicom_apply_sanitizers)
         umicom_apply_sanitizers(umicom_accountant_module-test)
     endif()
@@ -116,9 +132,11 @@ if(BUILD_TESTING)
         tests/test_workspace.c)
     target_link_libraries(umicom_accountant_workspace-test PRIVATE
         Umicom::accountant_module)
+    # Apply this branch only when its contract condition is satisfied.
     if(COMMAND umicom_apply_warnings)
         umicom_apply_warnings(umicom_accountant_workspace-test)
     endif()
+    # Apply this branch only when its contract condition is satisfied.
     if(COMMAND umicom_apply_sanitizers)
         umicom_apply_sanitizers(umicom_accountant_workspace-test)
     endif()
@@ -132,6 +150,7 @@ install(TARGETS umicom_accountant_module
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+# Keep the operation inside its valid bounds before reading, writing or adding data.
 if(TARGET umicom-accountant-console)
     install(TARGETS umicom-accountant-console
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -140,10 +159,12 @@ install(DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES application.umicom.yaml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/applications/accountant)
+# Apply this branch only when its contract condition is satisfied.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
     install(FILES README.md
         DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/applications/accountant)
 endif()
+# Apply this branch only when its contract condition is satisfied.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
     install(FILES LICENSE
         DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/accountant)

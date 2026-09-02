@@ -28,12 +28,20 @@ static const UmiProductApplicationAdoption ADOPTION = {
     1
 };
 
+/*
+ * Provide the accountant productisation contribution operation used by this module and its
+ * client applications.
+ */
 const UmiProductApplicationAdoption *
 umi_accountant_productisation_contribution(void)
 {
     return &ADOPTION;
 }
 
+/*
+ * Provide the accountant productisation snapshot operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_accountant_productisation_snapshot(
     UmiProductApplicationAdoptionSnapshot *out_snapshot)
 {

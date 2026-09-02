@@ -22,12 +22,24 @@
 extern "C" {
 #endif
 
+/**
+ * Initialise accountant runtime from caller-provided values so later operations receive a
+ * known state.
+ */
 UmiStatus umi_accountant_runtime_init(
     UmiApplicationWorkspaceRuntime *out_runtime);
+/**
+ * Provide the accountant runtime health operation used by this module and its client
+ * applications.
+ */
 UmiStatus umi_accountant_runtime_health(
     UmiApplicationCapabilityProbe probe,
     void *user_data,
     UmiApplicationRuntimeHealth *out_health);
+/**
+ * Provide the accountant runtime experience operation used by this module and its client
+ * applications.
+ */
 const UmiApplicationExperienceDefinition *umi_accountant_runtime_experience(void);
 
 #ifdef __cplusplus
