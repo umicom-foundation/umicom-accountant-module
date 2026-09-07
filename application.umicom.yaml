@@ -17,6 +17,8 @@ application:
   short_name: Accountant
   version: 0.1.0
   executable: umicom-accountant-console
+  native_executable: umicom-accountant
+  console_executable: umicom-accountant-console
   aliases: [accountant]
 
 framework:
@@ -25,6 +27,8 @@ framework:
 
 frontends:
   - console
+  # Shared Framework GTK layout preview; domain services require controllers.
+  - gtk
 
 entry:
   kind: workbench
