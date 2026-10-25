@@ -185,3 +185,34 @@ umicom_add_application_productisation_contribution(
 # console, productisation contribution, tests or catalogue layouts.
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../framework/cmake/UmicomFinanceOperations.cmake")
 umicom_attach_finance_operations(NAME accountant TARGET umicom_accountant_module)
+
+# Use the shared synthetic financial-message workflow; older SDKs retain the
+# original console and report an unavailable optional command explicitly.
+if(TARGET umicom-accountant-console AND TARGET Umicom::finance)
+    target_link_libraries(umicom-accountant-console PRIVATE Umicom::finance)
+    get_target_property(_accountant_ufmp_definitions Umicom::finance INTERFACE_COMPILE_DEFINITIONS)
+    if(BUILD_TESTING AND "UMICOM_HAS_UFMP_FOUNDATION=1" IN_LIST _accountant_ufmp_definitions)
+        add_test(NAME accountant.ufmp.simulation COMMAND umicom-accountant-console --ufmp-simulate)
+        set_tests_properties(accountant.ufmp.simulation PROPERTIES TIMEOUT 30
+            PASS_REGULAR_EXPRESSION "Changed payload refused: yes"
+            LABELS "application;accountant;ufmp;synthetic;regression")
+        if(COMMAND umicom_test_impact_owners)
+            umicom_test_impact_owners(accountant.ufmp.simulation TARGETS umicom-accountant-console)
+        endif()
+    endif()
+    unset(_accountant_ufmp_definitions)
+endif()
+
+# The preview is calculated by Framework; a product host never nets money itself.
+if(TARGET umicom-accountant-console AND TARGET Umicom::finance)
+    get_target_property(_accountant_clearing_definitions Umicom::finance INTERFACE_COMPILE_DEFINITIONS)
+    if(BUILD_TESTING AND "UMICOM_HAS_UFMP_CLEARING=1" IN_LIST _accountant_clearing_definitions)
+        add_test(NAME accountant.ufmp.clearing-preview COMMAND umicom-accountant-console --clearing-preview)
+        set_tests_properties(accountant.ufmp.clearing-preview PROPERTIES TIMEOUT 30
+            PASS_REGULAR_EXPRESSION "Net receive: -8500" LABELS "application;accountant;ufmp;synthetic;regression")
+        if(COMMAND umicom_test_impact_owners)
+            umicom_test_impact_owners(accountant.ufmp.clearing-preview TARGETS umicom-accountant-console)
+        endif()
+    endif()
+    unset(_accountant_clearing_definitions)
+endif()
