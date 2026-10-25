@@ -216,3 +216,19 @@ if(TARGET umicom-accountant-console AND TARGET Umicom::finance)
     endif()
     unset(_accountant_clearing_definitions)
 endif()
+
+# Delivery recovery is a shared service; this host supplies only presentation.
+if(TARGET umicom-accountant-console AND TARGET Umicom::financial_inbox)
+    target_link_libraries(umicom-accountant-console PRIVATE Umicom::financial_inbox)
+    get_target_property(_accountant_outbox_definitions Umicom::financial_inbox INTERFACE_COMPILE_DEFINITIONS)
+    if(BUILD_TESTING AND "UMICOM_HAS_UFMP_OUTBOX=1" IN_LIST _accountant_outbox_definitions)
+        add_test(NAME accountant.ufmp.outbox-recovery COMMAND umicom-accountant-console --outbox-recovery)
+        set_tests_properties(accountant.ufmp.outbox-recovery PROPERTIES TIMEOUT 30
+            PASS_REGULAR_EXPRESSION "Automatic retry after ambiguity: no"
+            LABELS "application;accountant;ufmp;synthetic;regression")
+        if(COMMAND umicom_test_impact_owners)
+            umicom_test_impact_owners(accountant.ufmp.outbox-recovery TARGETS umicom-accountant-console)
+        endif()
+    endif()
+    unset(_accountant_outbox_definitions)
+endif()
